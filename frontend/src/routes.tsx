@@ -1,14 +1,15 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router"; // Use 'react-router-dom' not just 'react-router'
 import MainLayout from "./layouts/MainLayout";
 import Homepage from "./pages/Homepage";
 import AuthLayout from "./layouts/AuthLayout";
 import LoginPage from "./pages/Auth/LoginPage";
 import RegisterPage from "./pages/Auth/RegisterPage";
 import ProductDetails from "./pages/ProductDetails";
-
 import RouteGuard from "./layouts/AuthCheck";
-import Profile from "./pages/Profile";
+import Profile from "./pages/Users/Profile";
+
 const router = createBrowserRouter([
+  // 1. PUBLIC ROUTES (MainLayout wrapper for all non-auth content)
   {
     path: "/",
     element: <MainLayout />,
@@ -18,44 +19,44 @@ const router = createBrowserRouter([
         element: <Homepage />,
       },
       {
-        path: "/products/:id",
+        path: "products/:id", // No leading slash here
         element: <ProductDetails />,
       },
-    ],
-  },
-  // Protected routes under MainLayout
-  {
-    element: <RouteGuard requireAuth={true} />,
-    children: [
+      // 2. PROTECTED ROUTES NESTED UNDER MAINLAYOUT
       {
-        path: "/",
-        element: <MainLayout />,
+        // This element acts as the guard for the routes below it.
+        // It renders nothing itself, just redirects if unauthenticated.
+        element: <RouteGuard requireAuth={true} />,
         children: [
           {
-            path: "/profile",
+            path: "profile", // Path will be /profile
             element: <Profile />,
           },
           {
-            path: "/orders",
+            path: "orders", // Path will be /orders
             // element: <OrdersPage />,
           },
         ],
       },
     ],
   },
+
+  // 3. AUTH ROUTES (Protected from logged-in users)
   {
-    element: <RouteGuard requireAuth={false} />, // false = redirect if authenticated
+    path: "/auth",
+    // Guard that redirects if authenticated (already logged in)
+    element: <RouteGuard requireAuth={false} />,
     children: [
       {
-        path: "/auth",
+        // This route uses the specific AuthLayout
         element: <AuthLayout />,
         children: [
           {
-            path: "login",
+            path: "login", // Path will be /auth/login
             element: <LoginPage />,
           },
           {
-            path: "register",
+            path: "register", // Path will be /auth/register
             element: <RegisterPage />,
           },
         ],

@@ -146,3 +146,133 @@ export const updateProduct = asyncHandler(
     }
   }
 );
+export const getProductsWithFilter = asyncHandler(
+  async (req: CustomUser, res: Response, next: NextFunction) => {
+    try {
+      const { keyword, category, size, minPrice, maxPrice, color, sortBy } =
+        req.query;
+      const userID = req.user?.userId;
+
+      if (!userID) {
+        res.status(401).json({ message: "User is not authenticated" });
+        return;
+      }
+
+      const query: any = {};
+      if (keyword) query.name = { $regex: keyword as string, $options: "i" };
+      if (category) query.category = category;
+      if (minPrice || maxPrice) {
+        query.price = {};
+        if (minPrice) query.price.$gte = Number(minPrice);
+        if (maxPrice) query.price.$lte = Number(maxPrice);
+      }
+      if (size) query.sizes = { $in: [size] };
+      if (color) query.colors = { $in: [color] };
+
+      const sortOptions: any = {};
+      if (sortBy === "price_asc") sortOptions.price = 1;
+      if (sortBy === "price_desc") sortOptions.price = -1;
+      if (sortBy === "latest") sortOptions.createdAt = -1;
+      if (sortBy === "rating") sortOptions.rating_count = -1;
+
+      const products = await Product.find(query).sort(sortOptions);
+
+      if (!products.length) {
+        res.status(404).json({ message: "No products found" });
+        return;
+      }
+
+      res.status(200).json({ success: true, count: products.length, products });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+export const getSingleProduct = asyncHandler(
+  async (req: CustomUser, res: Response, next: NextFunction) => {
+    try {
+      const { productId } = req.params;
+      const userID = req.user?.userId;
+
+      // Optional: restrict to authenticated users
+      if (!userID) {
+        res.status(401).json({ message: "User is not authenticated" });
+        return;
+      }
+
+      const product = await Product.findById(productId);
+
+      if (!product) {
+        res.status(404).json({ message: "Product not found" });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        product,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+export const getFeaturedProducts = asyncHandler(
+  async (req: CustomUser, res: Response, next: NextFunction) => {
+    try {
+      const userID = req.user?.userId;
+
+      // Optional: restrict to authenticated users
+      if (!userID) {
+        res.status(401).json({ message: "User is not authenticated" });
+        return;
+      }
+      const featuredProducts = await Product.find({ is_Featured: true }).sort({
+        createdAt: -1,
+      });
+
+      if (featuredProducts.length === 0) {
+        res.status(404).json({ message: "No featured products found" });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        count: featuredProducts.length,
+        products: featuredProducts,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+export const getNewArrivals = asyncHandler(
+  async (req: CustomUser, res: Response, next: NextFunction) => {
+    try {
+      const userID = req.user?.userId;
+
+      // Optional: restrict to authenticated users
+      if (!userID) {
+        res.status(401).json({ message: "User is not authenticated" });
+        return;
+      }
+      const newArrivals = await Product.find({ is_newArrival: true }).sort({
+        createdAt: -1,
+      });
+
+      if (newArrivals.length === 0) {
+        res.status(404).json({ message: "No new arrivals found" });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        count: newArrivals.length,
+        products: newArrivals,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);

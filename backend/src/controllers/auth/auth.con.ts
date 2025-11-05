@@ -68,7 +68,6 @@ export const loginAccount = asyncHandler(
 
     // Prepare user response (without sensitive data)
     const userResponse = {
-      id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,

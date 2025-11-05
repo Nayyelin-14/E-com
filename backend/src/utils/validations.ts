@@ -46,3 +46,28 @@ export const productValidator = [
     .isInt({ min: 0 })
     .withMessage("Stock count must be a non-negative integer"),
 ];
+
+export const ProfleUpdateValidator = [
+  body("email").isEmail().withMessage("Valid email is required").escape(),
+  body("name").notEmpty().trim().withMessage("Name is required").escape(),
+];
+
+export const PasswordValidator = [
+  body("oldPassword")
+    .notEmpty()
+    .withMessage("Old password is required")
+    .isLength({ min: 7 })
+    .withMessage("Old password must be at least 7 characters long"),
+
+  body("newPassword")
+    .notEmpty()
+    .withMessage("New password is required")
+    .isLength({ min: 7 })
+    .withMessage("New password must be at least 7 characters long")
+    .custom((value, { req }) => {
+      if (value === req.body.oldPassword) {
+        throw new Error("New password must be different from old password");
+      }
+      return true;
+    }),
+];

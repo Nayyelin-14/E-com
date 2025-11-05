@@ -21,8 +21,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLogoutMutation } from "@/store/slices/userApiSlice";
 import { toast } from "sonner";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { clearUserInfo } from "@/store/slices/auth";
+import { apiSlice } from "@/store/slices/apiSlice";
 const MainNav = () => {
   const userInfo = useSelector((state: RootState) => state.auth.userInfo);
   const navigate = useNavigate();
@@ -43,7 +44,12 @@ const MainNav = () => {
         toast.warning(response?.message || "Logout success");
       }
       dispatch(clearUserInfo());
-      navigate("/auth/login");
+
+      // ✅ Clear RTK Query cache (so useAuthCheckQuery doesn’t return stale data)
+      dispatch(apiSlice.util.resetApiState());
+
+      // ✅ Navigate after state reset
+      navigate("/auth/login", { replace: true });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.data?.message);
@@ -78,11 +84,17 @@ const MainNav = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer hover:bg-black/20">
+                <DropdownMenuItem
+                  className="cursor-pointer hover:bg-black/20"
+                  onClick={() => navigate("/profile")}
+                >
                   <UserCircle className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:bg-black/20">
+                <DropdownMenuItem
+                  className="cursor-pointer hover:bg-black/20"
+                  onClick={() => navigate("/setting")}
+                >
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
@@ -98,7 +110,10 @@ const MainNav = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <LogIn className="hover:text-gray-500 cursor-pointer" />
+            <Link to={"/auth/login"}>
+              {" "}
+              <LogIn className="hover:text-gray-500 cursor-pointer" />
+            </Link>
           )}
         </div>
       </div>

@@ -3,6 +3,10 @@ import { authenticate, authorization } from "../middlewares/isAuth";
 import {
   createProduct,
   deleteProduct,
+  getFeaturedProducts,
+  getNewArrivals,
+  getProductsWithFilter,
+  getSingleProduct,
   updateProduct,
 } from "../controllers/Products/products.con";
 import { productValidator } from "../utils/validations";
@@ -30,4 +34,8 @@ router.put(
   authorization(["admin"]),
   updateProduct
 );
+router.get("/getallproducts", authenticate, getProductsWithFilter);
+router.get("/is_featured", getFeaturedProducts);
+router.get("/:productId", getSingleProduct);
+router.get("/new-arrivals", getNewArrivals);
 export default router;

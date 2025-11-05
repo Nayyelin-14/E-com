@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon  --exec ts-node src/app.ts"
+    "work": "nodemon  src/cacheActions/workers/profileWorker.ts",
+    "dev:nodemon": "nodemon  --exec ts-node src/app.ts",
+    "server": "npm-run-all --parallel dev:nodemon work"
   },
   "keywords": [],
   "author": "",
@@ -12,18 +14,29 @@
   "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "bullmq": "^5.62.0",
+    "cloudinary": "^2.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
+    "ioredis": "^5.8.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.2"
+    "mongoose": "^8.19.2",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "npm-run-all": "^4.1.5",
+    "sharp": "^0.34.4",
+    "streamifier": "^0.1.1"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10"
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.0.0",
+    "@types/streamifier": "^0.1.2"
   }
 }

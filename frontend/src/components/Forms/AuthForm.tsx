@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/store/slices/auth";
+import { PasswordInput } from "../PasswordInput";
 
 type AuthFormProps = {
   FormType: "Login" | "Register";
@@ -120,7 +121,7 @@ const AuthForm = ({ FormType }: AuthFormProps) => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="*******" {...field} />
+                    <PasswordInput field={field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

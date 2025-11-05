@@ -6,6 +6,8 @@ import { connectDB } from "./db/connectDB";
 import errorHandler from "./middlewares/errorHandler";
 import authRoutes from "./routes/auth.route";
 import productRoutes from "./routes/product.route";
+import userRoutes from "./routes/user.route";
+import morgan from "morgan";
 dotenv.config({
   path: ".env",
 });
@@ -18,12 +20,13 @@ app.use(
     credentials: true,
   })
 );
-
+app.use(morgan("dev"));
 app.use(json());
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
-app.use("/api", productRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api", userRoutes);
 const PORT = process.env.PORT || 4123;
 
 app.use(errorHandler);

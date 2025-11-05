@@ -1,11 +1,12 @@
-// components/RouteGuard.tsx
+// RouteGuard.tsx
 import Loader from "@/common/Loader";
+
 import { useAuthCheckQuery } from "@/store/slices/userApiSlice";
 
 import { Navigate, Outlet } from "react-router";
 
 interface RouteGuardProps {
-  requireAuth?: boolean; // true = protected route, false = public route
+  requireAuth?: boolean;
 }
 
 function RouteGuard({ requireAuth = false }: RouteGuardProps) {
@@ -15,22 +16,24 @@ function RouteGuard({ requireAuth = false }: RouteGuardProps) {
 
   const isAuthenticated = data?.success && !error;
 
-  // Show loading spinner
+  // 🟡 1. Wait until loading finishes before deciding anything
   if (isLoading) {
     return <Loader />;
   }
 
-  // Protected route: redirect to login if not authenticated
-  if (requireAuth && !isAuthenticated) {
-    return <Navigate to="/auth/login" replace />;
+  // 🟢 2. Protected route (needs auth)
+  if (requireAuth) {
+    if (!isAuthenticated) {
+      return <Navigate to="/auth/login" replace />;
+    }
+    return <Outlet />;
   }
 
-  // Public route (login/register): redirect to home if authenticated
+  // 🔓 3. Public route (redirect if already logged in)
   if (!requireAuth && isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
-  // Allow access
   return <Outlet />;
 }
 
