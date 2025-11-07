@@ -1,44 +1,69 @@
 import { useEffect, useState } from "react";
-// import { useParams } from "react-router";
-import { products } from "../constants/sampleProduct";
-import ProductRating from "../components/Products/ProductRating";
-import { Minus, Plus } from "lucide-react";
 
-const sampleProduct = products[0];
+import ProductRating from "../components/Products/ProductRating";
+import { Loader, Minus, Plus } from "lucide-react";
+import { useGetSingleProductQuery } from "@/store/slices/productsApiSlice";
+import { useParams } from "react-router";
+import type { RootState } from "@/store";
+import { useSelector } from "react-redux";
+
 const ProductDetails = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string | null>("#000000");
-  const [selectedSize, setSelectedSize] = useState<string | null>("M");
-  //   const { id } = useParams();
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const { id } = useParams();
+  const { data, isLoading: dataLoading } = useGetSingleProductQuery(id!);
+  const { userInfo } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    if (sampleProduct.images.length > 0) {
-      setSelectedImage(sampleProduct.images[0].url);
+    if (data?.product) {
+      // Set defaults only if not already set
+      if (data.product.images?.length > 0) {
+        setSelectedImage(data.product.images[0].url);
+      }
+      if (data.product.colors?.length > 0) {
+        setSelectedColor(data.product.colors[0]);
+      }
+      if (data.product.sizes?.length > 0) {
+        setSelectedSize(data.product.sizes[0]);
+      }
     }
-    if (sampleProduct.color.length > 0) {
-      setSelectedColor(sampleProduct.color[0]);
-    }
-  }, []);
+  }, [data?.product, id]); // ONLY depend on id - this runs when navigating to a new product
+
+  if (dataLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader className="animate-spin" size={48} />
+      </div>
+    );
+  }
+
+  if (!data?.product) {
+    return <div>Product not found</div>;
+  }
+
   return (
-    <section className="grid grid-cols-1  md:grid-cols-2 gap-8 my-10">
+    <section className="grid grid-cols-1 md:grid-cols-2 gap-8 my-10">
       <div className="grid grid-cols-4 gap-2">
         <div className="col-span-1 flex flex-col gap-3">
-          {sampleProduct.images &&
-            sampleProduct.images.map((img, index) => (
-              <div
-                key={index}
-                className={`${
-                  selectedImage === img.url && "border-2  border-gray-300"
-                } object-cover w-24 h-24 p-1 rounded-xl`}
-              >
-                <img
-                  onClick={() => setSelectedImage(img.url)}
-                  src={img.url}
-                  alt=""
-                  className="w-full h-full rounded-xl cursor-pointer"
-                />
-              </div>
-            ))}
+          {data.product.images &&
+            data.product.images.map(
+              (img: { url: string; _id: string }, index: number) => (
+                <div
+                  key={img._id || index}
+                  className={`${
+                    selectedImage === img.url && "border-2 border-gray-300"
+                  } object-cover w-24 h-24 p-1 rounded-xl`}
+                >
+                  <img
+                    onClick={() => setSelectedImage(img.url)}
+                    src={img.url}
+                    alt={`Product view ${index + 1}`}
+                    className="w-full h-full rounded-xl cursor-pointer hover:opacity-80 transition-opacity"
+                  />
+                </div>
+              )
+            )}
         </div>
         {selectedImage && (
           <img
@@ -49,23 +74,20 @@ const ProductDetails = () => {
         )}
       </div>
       <div className="flex flex-col justify-between">
-        <p className=" text-3xl font-bold ">{sampleProduct.name}</p>
-        <ProductRating ratingCount={sampleProduct.rating} />
-        <p className="text-3xl font-extrabold mb-1 ">
-          {" "}
-          $ {sampleProduct.price}
-        </p>
+        <p className="text-3xl font-bold">{data.product.name}</p>
+        <ProductRating ratingCount={data.product.rating} />
+        <p className="text-3xl font-extrabold mb-1">$ {data.product.price}</p>
         <p className="text-sm font-medium text-gray-400">
-          {sampleProduct.description}
+          {data.product.description}
         </p>
         <hr className="text-xl font-bold my-2 text-gray-400" />
-        <p className=" text-xl font-bold">Colors</p>
+        <p className="text-xl font-bold">Colors</p>
         <div className="flex gap-2 mt-2 items-center">
-          {sampleProduct.color?.map((c, index) => (
+          {data.product.colors?.map((c: string, index: number) => (
             <div
               key={index}
-              className={`rounded-full w-4 h-4 p-0.5 cursor-pointer ${
-                selectedColor === c && "border-2 border-gray-400"
+              className={`rounded-full w-6 h-6 p-0.5 cursor-pointer hover:scale-110 transition-transform ${
+                selectedColor === c && "ring-2 ring-gray-400 ring-offset-2"
               }`}
               style={{ backgroundColor: c }}
               onClick={() => setSelectedColor(c)}
@@ -73,14 +95,16 @@ const ProductDetails = () => {
           ))}
         </div>
         <hr className="text-xl font-bold my-2 text-gray-400" />
-        <p className=" text-xl font-bold ">Sizes</p>
+        <p className="text-xl font-bold">Sizes</p>
 
         <div className="flex gap-2 mt-2 items-center">
-          {sampleProduct.size?.map((s, index) => (
+          {data.product.sizes?.map((s: string, index: number) => (
             <div
               key={index}
-              className={`p-1 rounded-full px-3 text-center cursor-pointer text-sm ${
-                selectedSize === s && "border-2  bg-black text-white"
+              className={`p-2 px-4 rounded-lg text-center cursor-pointer text-sm border transition-colors ${
+                selectedSize === s
+                  ? "border-black bg-black text-white"
+                  : "border-gray-300 hover:border-gray-400"
               }`}
               onClick={() => setSelectedSize(s)}
             >
@@ -88,22 +112,28 @@ const ProductDetails = () => {
             </div>
           ))}
         </div>
-        <hr className="text-xl font-bold my-2 text-gray-400" />
-        <div className="flex gap-4 items-center">
-          <div className="flex gap-2 items-center">
-            <button className="w-6 h-6 flex justify-center items-center border border-gray-200 bg-black text-white cursor-pointer rounded hover:bg-black/60">
-              <Minus size={12} />
-            </button>
-            <span>1</span>
-            <button className="w-6 h-6 flex justify-center items-center border border-gray-200 bg-black text-white rounded hover:bg-black/60 cursor-pointer">
-              <Plus size={12} />
-            </button>
-          </div>
+        {userInfo && (
+          <>
+            <hr className="text-xl font-bold my-2 text-gray-400" />
+            <div className="flex gap-4 items-center">
+              <div className="flex gap-3 items-center border border-gray-200 rounded-lg px-4 py-2">
+                <button className="w-8 h-8 flex justify-center items-center bg-gray-100 text-black cursor-pointer rounded hover:bg-gray-200 transition-colors">
+                  <Minus size={16} />
+                </button>
+                <span className="font-semibold min-w-[20px] text-center">
+                  1
+                </span>
+                <button className="w-8 h-8 flex justify-center items-center bg-gray-100 text-black rounded hover:bg-gray-200 cursor-pointer transition-colors">
+                  <Plus size={16} />
+                </button>
+              </div>
 
-          <button className="p-2 rounded-xl bg-black w-full text-center text-sm text-white hover:bg-black/60 cursor-pointer">
-            Add to Cart
-          </button>
-        </div>
+              <button className="p-3 rounded-lg bg-black w-full text-center font-semibold text-white hover:bg-black/80 cursor-pointer transition-colors">
+                Add to Cart
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

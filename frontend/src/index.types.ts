@@ -31,3 +31,23 @@ export interface PasswordUpdate {
   oldPassword: string;
   newPassword: string;
 }
+
+export type Image = {
+  url: string;
+  _id?: string;
+};
+export type Product = {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  rating_count: number;
+  sizes: string[];
+  colors: string[];
+  images: Image[];
+};
+
+export type ProductProps = {
+  products: Product[];
+};

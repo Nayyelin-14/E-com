@@ -34,6 +34,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
         url: "/auth/authCheck",
         method: "GET",
       }),
+      keepUnusedDataFor: 0,
     }),
     getUser: builder.query<User, void>({
       query: () => ({

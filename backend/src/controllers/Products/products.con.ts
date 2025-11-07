@@ -131,7 +131,7 @@ export const updateProduct = asyncHandler(
         productId,
         { $set: req.body },
         {
-          new: true, // Return updated document
+          new: true, //  updated document
           runValidators: true, // Run schema validators
         }
       );
@@ -188,24 +188,18 @@ export const getProductsWithFilter = asyncHandler(
     }
   }
 );
-
 export const getSingleProduct = asyncHandler(
   async (req: CustomUser, res: Response, next: NextFunction) => {
     try {
       const { productId } = req.params;
-      const userID = req.user?.userId;
-
-      // Optional: restrict to authenticated users
-      if (!userID) {
-        res.status(401).json({ message: "User is not authenticated" });
-        return;
-      }
 
       const product = await Product.findById(productId);
 
       if (!product) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+        res.status(404).json({
+          success: false,
+          message: "Product not found",
+        });
       }
 
       res.status(200).json({
@@ -213,7 +207,12 @@ export const getSingleProduct = asyncHandler(
         product,
       });
     } catch (error) {
-      next(error);
+      console.error("❌ Error fetching product:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error while fetching product",
+        error: (error as Error).message,
+      });
     }
   }
 );
@@ -221,13 +220,6 @@ export const getSingleProduct = asyncHandler(
 export const getFeaturedProducts = asyncHandler(
   async (req: CustomUser, res: Response, next: NextFunction) => {
     try {
-      const userID = req.user?.userId;
-
-      // Optional: restrict to authenticated users
-      if (!userID) {
-        res.status(401).json({ message: "User is not authenticated" });
-        return;
-      }
       const featuredProducts = await Product.find({ is_Featured: true }).sort({
         createdAt: -1,
       });
@@ -237,7 +229,7 @@ export const getFeaturedProducts = asyncHandler(
         return;
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         count: featuredProducts.length,
         products: featuredProducts,
@@ -250,29 +242,32 @@ export const getFeaturedProducts = asyncHandler(
 export const getNewArrivals = asyncHandler(
   async (req: CustomUser, res: Response, next: NextFunction) => {
     try {
-      const userID = req.user?.userId;
-
-      // Optional: restrict to authenticated users
-      if (!userID) {
-        res.status(401).json({ message: "User is not authenticated" });
-        return;
-      }
+      // Find all products where `is_newArrival` is true, sorted by latest first
       const newArrivals = await Product.find({ is_newArrival: true }).sort({
         createdAt: -1,
       });
 
-      if (newArrivals.length === 0) {
-        res.status(404).json({ message: "No new arrivals found" });
-        return;
+      // If no products found, return 404
+      if (!newArrivals || newArrivals.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "No new arrivals found",
+        });
       }
 
-      res.status(200).json({
+      // Otherwise return success response
+      return res.status(200).json({
         success: true,
         count: newArrivals.length,
         products: newArrivals,
       });
     } catch (error) {
-      next(error);
+      console.error("❌ Error fetching new arrivals:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal Server Error while fetching new arrivals",
+        error: (error as Error).message,
+      });
     }
   }
 );

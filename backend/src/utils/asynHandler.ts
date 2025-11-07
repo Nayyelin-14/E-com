@@ -5,7 +5,7 @@ const asyncHandler = (
     req: Request,
     res: Response,
     next: NextFunction
-  ) => Promise<void>
+  ) => Promise<any>
 ) => {
   return (req: Request, res: Response, next: NextFunction) =>
     Promise.resolve(controllerFN(req, res, next)).catch(next);

@@ -35,7 +35,8 @@ router.put(
   updateProduct
 );
 router.get("/getallproducts", authenticate, getProductsWithFilter);
-router.get("/is_featured", getFeaturedProducts);
-router.get("/:productId", getSingleProduct);
 router.get("/new-arrivals", getNewArrivals);
+
+router.get("/is_featured", getFeaturedProducts);
+router.get("/details/:productId", getSingleProduct);
 export default router;

@@ -1,63 +1,96 @@
-import { createBrowserRouter } from "react-router"; // Use 'react-router-dom' not just 'react-router'
+import { createBrowserRouter } from "react-router";
+import { lazy, Suspense } from "react";
+
+// Eagerly load layouts (they're used immediately)
 import MainLayout from "./layouts/MainLayout";
-import Homepage from "./pages/Homepage";
 import AuthLayout from "./layouts/AuthLayout";
-import LoginPage from "./pages/Auth/LoginPage";
-import RegisterPage from "./pages/Auth/RegisterPage";
-import ProductDetails from "./pages/ProductDetails";
 import RouteGuard from "./layouts/AuthCheck";
-import Profile from "./pages/Users/Profile";
+import Loader from "./common/Loader";
+
+// Lazy load pages
+const Homepage = lazy(() => import("./pages/Homepage"));
+const LoginPage = lazy(() => import("./pages/Auth/LoginPage"));
+const RegisterPage = lazy(() => import("./pages/Auth/RegisterPage"));
+const ProductDetails = lazy(() => import("./pages/ProductDetails"));
+const Profile = lazy(() => import("./pages/Users/Profile"));
+const SettingPage = lazy(() => import("./pages/Users/SettingPage"));
 
 const router = createBrowserRouter([
-  // 1. PUBLIC ROUTES (MainLayout wrapper for all non-auth content)
   {
     path: "/",
     element: <MainLayout />,
     children: [
       {
         index: true,
-        element: <Homepage />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Homepage />
+          </Suspense>
+        ),
       },
       {
-        path: "products/:id", // No leading slash here
-        element: <ProductDetails />,
+        path: "products/:id",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <ProductDetails />
+          </Suspense>
+        ),
       },
-      // 2. PROTECTED ROUTES NESTED UNDER MAINLAYOUT
+
       {
-        // This element acts as the guard for the routes below it.
-        // It renders nothing itself, just redirects if unauthenticated.
-        element: <RouteGuard requireAuth={true} />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            <RouteGuard requireAuth={true} />
+          </Suspense>
+        ),
         children: [
           {
-            path: "profile", // Path will be /profile
-            element: <Profile />,
+            path: "profile",
+            element: (
+              <Suspense fallback={<Loader />}>
+                <Profile />
+              </Suspense>
+            ),
           },
           {
-            path: "orders", // Path will be /orders
-            // element: <OrdersPage />,
+            path: "setting",
+            element: (
+              <Suspense fallback={<Loader />}>
+                <SettingPage />
+              </Suspense>
+            ),
           },
         ],
       },
     ],
   },
 
-  // 3. AUTH ROUTES (Protected from logged-in users)
   {
     path: "/auth",
-    // Guard that redirects if authenticated (already logged in)
-    element: <RouteGuard requireAuth={false} />,
+    element: (
+      <Suspense fallback={<Loader />}>
+        <RouteGuard requireAuth={false} />
+      </Suspense>
+    ),
     children: [
       {
-        // This route uses the specific AuthLayout
         element: <AuthLayout />,
         children: [
           {
-            path: "login", // Path will be /auth/login
-            element: <LoginPage />,
+            path: "login",
+            element: (
+              <Suspense fallback={<Loader />}>
+                <LoginPage />
+              </Suspense>
+            ),
           },
           {
-            path: "register", // Path will be /auth/register
-            element: <RegisterPage />,
+            path: "register",
+            element: (
+              <Suspense fallback={<Loader />}>
+                <RegisterPage />
+              </Suspense>
+            ),
           },
         ],
       },
