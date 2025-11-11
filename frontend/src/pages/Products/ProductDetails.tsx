@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import ProductRating from "../components/Products/ProductRating";
+import ProductRating from "../../components/Products/ProductRating";
 import { Loader, Minus, Plus } from "lucide-react";
 import { useGetSingleProductQuery } from "@/store/slices/productsApiSlice";
 import { useParams } from "react-router";
@@ -11,6 +11,7 @@ const ProductDetails = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState<number | null>(1);
   const { id } = useParams();
   const { data, isLoading: dataLoading } = useGetSingleProductQuery(id!);
   const { userInfo } = useSelector((state: RootState) => state.auth);
@@ -117,13 +118,25 @@ const ProductDetails = () => {
             <hr className="text-xl font-bold my-2 text-gray-400" />
             <div className="flex gap-4 items-center">
               <div className="flex gap-3 items-center border border-gray-200 rounded-lg px-4 py-2">
-                <button className="w-8 h-8 flex justify-center items-center bg-gray-100 text-black cursor-pointer rounded hover:bg-gray-200 transition-colors">
+                <button
+                  className="w-8 h-8 flex justify-center items-center bg-gray-100 text-black cursor-pointer rounded hover:bg-gray-200 transition-colors"
+                  onClick={() => {
+                    if (quantity! === 1 || quantity! < 1) {
+                      return 1;
+                    }
+                    setQuantity((prev) => prev! - 1);
+                  }}
+                >
                   <Minus size={16} />
                 </button>
                 <span className="font-semibold min-w-[20px] text-center">
-                  1
+                  {quantity}
                 </span>
-                <button className="w-8 h-8 flex justify-center items-center bg-gray-100 text-black rounded hover:bg-gray-200 cursor-pointer transition-colors">
+
+                <button
+                  className="w-8 h-8 flex justify-center items-center bg-gray-100 text-black rounded hover:bg-gray-200 cursor-pointer transition-colors"
+                  onClick={() => setQuantity((prev) => prev! + 1)}
+                >
                   <Plus size={16} />
                 </button>
               </div>

@@ -71,7 +71,7 @@ const ProfileForm: React.FC<EditableInfos> = ({ user }) => {
   return (
     <div className="mt-6 space-y-6 px-5 my-4">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 ">
           {/* Full Name */}
           <FormField
             control={form.control}

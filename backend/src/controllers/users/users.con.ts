@@ -24,14 +24,16 @@ export const uploadProfile = async (
     }
 
     const user = await User.findById(userId);
-    if (!user || !user.profileImage?.publicId) {
-      return res.status(404).json({ message: "No image found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const publicId = user.profileImage?.publicId;
+    if (publicId) {
+      await deleteFromCloudinary(publicId!);
+      user.profileImage = undefined;
+      await user.save();
     }
 
-    await deleteFromCloudinary(user.profileImage.publicId);
-
-    user.profileImage = undefined;
-    await user.save();
     const originalName = file.originalname.split(".")[0];
     const uniqueFileName = `${originalName}_${Date.now()}`;
 

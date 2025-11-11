@@ -151,12 +151,6 @@ export const getProductsWithFilter = asyncHandler(
     try {
       const { keyword, category, size, minPrice, maxPrice, color, sortBy } =
         req.query;
-      const userID = req.user?.userId;
-
-      if (!userID) {
-        res.status(401).json({ message: "User is not authenticated" });
-        return;
-      }
 
       const query: any = {};
       if (keyword) query.name = { $regex: keyword as string, $options: "i" };
@@ -166,8 +160,15 @@ export const getProductsWithFilter = asyncHandler(
         if (minPrice) query.price.$gte = Number(minPrice);
         if (maxPrice) query.price.$lte = Number(maxPrice);
       }
-      if (size) query.sizes = { $in: [size] };
-      if (color) query.colors = { $in: [color] };
+      if (size) {
+        const sizeArray = (size as string).split(",").filter(Boolean);
+        query.sizes = { $in: sizeArray };
+      }
+
+      if (color) {
+        const colorArray = (color as string).split(",").filter(Boolean);
+        query.colors = { $in: colorArray };
+      }
 
       const sortOptions: any = {};
       if (sortBy === "price_asc") sortOptions.price = 1;
@@ -268,6 +269,46 @@ export const getNewArrivals = asyncHandler(
         message: "Internal Server Error while fetching new arrivals",
         error: (error as Error).message,
       });
+    }
+  }
+);
+
+export const GetProductFilters = asyncHandler(
+  async (req: CustomUser, res: Response, next: NextFunction) => {
+    try {
+      // Distinct field values
+      const sizes = await Product.distinct("sizes");
+      const colors = await Product.distinct("colors");
+      const categories = await Product.distinct("category");
+
+      // Aggregate min & max price
+      const priceRange = await Product.aggregate([
+        {
+          $group: {
+            _id: null,
+            minPrice: { $min: "$price" },
+            maxPrice: { $max: "$price" },
+          },
+        },
+      ]);
+
+      // Format response
+      const result = {
+        sizes: sizes.sort(),
+        colors: colors.sort(),
+        categories: categories.sort(),
+
+        minPrice: priceRange[0].minPrice || 0,
+        maxPrice: priceRange[0].maxPrice || 0,
+      };
+
+      res.status(200).json({
+        isSuccess: true,
+        message: "Filters fetched successfully",
+        filters: result,
+      });
+    } catch (error) {
+      next(error);
     }
   }
 );

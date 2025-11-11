@@ -40,19 +40,17 @@ export default function UserProfile() {
       toast.warning("Please select an image first");
       return;
     }
-
     const formData = new FormData();
     formData.append("profileImage", selectedFile);
 
     try {
       const response = await uploadMutation(formData).unwrap();
-      console.log(response);
       setPreviewImg(null);
       setSelectedFile(null);
       toast.success(response?.message);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to enqueue upload");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(err!.data!.message!);
       setPreviewImg(null);
       setSelectedFile(null);
     }
@@ -81,9 +79,13 @@ export default function UserProfile() {
             <div className="flex flex-col items-center -mt-20 mb-6">
               <div className="relative">
                 <Avatar className="w-20 h-20 mt-10">
-                  <AvatarImage
-                    src={previewImg ?? userInfo?.user?.profileImage?.url ?? ""}
-                  />
+                  {previewImg || userInfo?.user?.profileImage?.url ? (
+                    <AvatarImage
+                      src={previewImg ?? userInfo?.user?.profileImage?.url}
+                      alt="Profile"
+                    />
+                  ) : null}
+
                   <AvatarFallback>
                     <span className="text-lg font-bold">
                       {userInfo?.user?.name &&

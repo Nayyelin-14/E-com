@@ -5,6 +5,7 @@ import {
   deleteProduct,
   getFeaturedProducts,
   getNewArrivals,
+  GetProductFilters,
   getProductsWithFilter,
   getSingleProduct,
   updateProduct,
@@ -34,9 +35,10 @@ router.put(
   authorization(["admin"]),
   updateProduct
 );
-router.get("/getallproducts", authenticate, getProductsWithFilter);
+router.get("/getallproducts", getProductsWithFilter);
 router.get("/new-arrivals", getNewArrivals);
 
 router.get("/is_featured", getFeaturedProducts);
 router.get("/details/:productId", getSingleProduct);
+router.get("/filters/meta", GetProductFilters);
 export default router;

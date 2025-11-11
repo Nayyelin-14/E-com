@@ -18,14 +18,14 @@ cloudinary.v2.config({
 export const uploadToCloudinary = async (
   fileBuffer: Buffer,
   folder: string,
-  fileName: string // 👈 this will become public_id
+  fileName: string
 ): Promise<CloudinaryUploadResult> => {
   console.log(fileBuffer, folder, fileName, "to cloud");
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.v2.uploader.upload_stream(
       {
         folder,
-        public_id: fileName, // ✅ use public_id to set the filename
+        public_id: fileName,
         resource_type: "auto",
       },
       (error, result) => {
@@ -48,10 +48,9 @@ export const uploadToCloudinary = async (
 export const deleteFromCloudinary = async (publicId: string) => {
   try {
     const result = await cloudinary.v2.uploader.destroy(publicId);
-    console.log("✅ Image deleted:", result);
+
     return result;
   } catch (error) {
-    console.error("❌ Failed to delete image:", error);
     throw new Error("Cloudinary deletion failed");
   }
 };

@@ -6,12 +6,13 @@ import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import RouteGuard from "./layouts/AuthCheck";
 import Loader from "./common/Loader";
+import AllProducts from "./pages/Products/AllProducts";
 
 // Lazy load pages
 const Homepage = lazy(() => import("./pages/Homepage"));
 const LoginPage = lazy(() => import("./pages/Auth/LoginPage"));
 const RegisterPage = lazy(() => import("./pages/Auth/RegisterPage"));
-const ProductDetails = lazy(() => import("./pages/ProductDetails"));
+const ProductDetails = lazy(() => import("./pages/Products/ProductDetails"));
 const Profile = lazy(() => import("./pages/Users/Profile"));
 const SettingPage = lazy(() => import("./pages/Users/SettingPage"));
 
@@ -25,6 +26,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loader />}>
             <Homepage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "products",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <AllProducts />
           </Suspense>
         ),
       },

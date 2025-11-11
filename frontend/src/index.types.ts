@@ -46,8 +46,18 @@ export type Product = {
   sizes: string[];
   colors: string[];
   images: Image[];
+  instock_count: number;
 };
 
 export type ProductProps = {
   products: Product[];
+};
+
+export type FiltersMeta = {
+  filters: {
+    sizes: string[];
+    colors: string[];
+    minPrice: number;
+    maxPrice: number;
+  };
 };
