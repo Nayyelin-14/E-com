@@ -6,15 +6,24 @@ import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import RouteGuard from "./layouts/AuthCheck";
 import Loader from "./common/Loader";
-import AllProducts from "./pages/Products/AllProducts";
+import AdminLayout from "./layouts/AdminLayout";
 
 // Lazy load pages
 const Homepage = lazy(() => import("./pages/Homepage"));
 const LoginPage = lazy(() => import("./pages/Auth/LoginPage"));
 const RegisterPage = lazy(() => import("./pages/Auth/RegisterPage"));
+const AllProducts = lazy(() => import("./pages/Products/AllProducts"));
 const ProductDetails = lazy(() => import("./pages/Products/ProductDetails"));
+const CreateProductPage = lazy(
+  () => import("./pages/Products/admin/createProductPage")
+);
 const Profile = lazy(() => import("./pages/Users/Profile"));
 const SettingPage = lazy(() => import("./pages/Users/SettingPage"));
+// Wrapper component for Suspense
+// eslint-disable-next-line react-refresh/only-export-components
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<Loader />}>{children}</Suspense>
+);
 
 const router = createBrowserRouter([
   {
@@ -24,49 +33,68 @@ const router = createBrowserRouter([
       {
         index: true,
         element: (
-          <Suspense fallback={<Loader />}>
+          <SuspenseWrapper>
             <Homepage />
-          </Suspense>
+          </SuspenseWrapper>
         ),
       },
       {
         path: "products",
         element: (
-          <Suspense fallback={<Loader />}>
+          <SuspenseWrapper>
             <AllProducts />
-          </Suspense>
+          </SuspenseWrapper>
         ),
       },
       {
         path: "products/:id",
         element: (
-          <Suspense fallback={<Loader />}>
+          <SuspenseWrapper>
             <ProductDetails />
-          </Suspense>
+          </SuspenseWrapper>
         ),
       },
 
+      // Admin routes
+      {
+        element: <RouteGuard requireAuth={true} allowedRoles={["admin"]} />,
+        children: [
+          {
+            element: <AdminLayout />,
+            children: [
+              {
+                path: "admin/product/create-products",
+                element: (
+                  <SuspenseWrapper>
+                    <CreateProductPage />
+                  </SuspenseWrapper>
+                ),
+              },
+            ],
+          },
+        ],
+      },
+
+      // Authenticated user routes (admin + customer)
       {
         element: (
-          <Suspense fallback={<Loader />}>
-            <RouteGuard requireAuth={true} />
-          </Suspense>
+          <RouteGuard requireAuth={true} allowedRoles={["admin", "customer"]} />
         ),
         children: [
           {
             path: "profile",
             element: (
-              <Suspense fallback={<Loader />}>
+              <SuspenseWrapper>
                 <Profile />
-              </Suspense>
+              </SuspenseWrapper>
             ),
           },
           {
             path: "setting",
             element: (
-              <Suspense fallback={<Loader />}>
+              <SuspenseWrapper>
                 <SettingPage />
-              </Suspense>
+              </SuspenseWrapper>
             ),
           },
         ],
@@ -74,13 +102,10 @@ const router = createBrowserRouter([
     ],
   },
 
+  // Auth routes
   {
     path: "/auth",
-    element: (
-      <Suspense fallback={<Loader />}>
-        <RouteGuard requireAuth={false} />
-      </Suspense>
-    ),
+    element: <RouteGuard requireAuth={false} />,
     children: [
       {
         element: <AuthLayout />,
@@ -88,17 +113,17 @@ const router = createBrowserRouter([
           {
             path: "login",
             element: (
-              <Suspense fallback={<Loader />}>
+              <SuspenseWrapper>
                 <LoginPage />
-              </Suspense>
+              </SuspenseWrapper>
             ),
           },
           {
             path: "register",
             element: (
-              <Suspense fallback={<Loader />}>
+              <SuspenseWrapper>
                 <RegisterPage />
-              </Suspense>
+              </SuspenseWrapper>
             ),
           },
         ],

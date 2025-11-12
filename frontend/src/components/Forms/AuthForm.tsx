@@ -23,7 +23,7 @@ import {
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/store/slices/auth";
-import { PasswordInput } from "../PasswordInput";
+import { PasswordInput } from "../Inputs/PasswordInput";
 
 type AuthFormProps = {
   FormType: "Login" | "Register";

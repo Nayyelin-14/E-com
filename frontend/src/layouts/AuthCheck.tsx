@@ -4,24 +4,34 @@ import Loader from "@/common/Loader";
 import { useAuthCheckQuery } from "@/store/slices/userApiSlice";
 
 import { Navigate, Outlet } from "react-router";
+import { toast } from "sonner";
 
 interface RouteGuardProps {
   requireAuth?: boolean;
+  allowedRoles?: string[];
 }
 
-function RouteGuard({ requireAuth = false }: RouteGuardProps) {
-  const { data, isLoading, error } = useAuthCheckQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
+function RouteGuard({ requireAuth = false, allowedRoles }: RouteGuardProps) {
+  const { data, isLoading, error, isUninitialized, isFetching } =
+    useAuthCheckQuery(undefined, {
+      refetchOnMountOrArgChange: true,
+    });
 
-  console.log(data, error);
-  if (isLoading) {
+  if (isLoading || isUninitialized || isFetching) {
     return <Loader />;
   }
+
+  const userRole = data?.user.role;
 
   if (requireAuth) {
     if (error) {
       return <Navigate to="/auth/login" replace />;
+    }
+    if (allowedRoles && allowedRoles.length > 0) {
+      if (!userRole || !allowedRoles.includes(userRole)) {
+        toast.warning("Unauthorized access");
+        return <Navigate to="/" replace />;
+      }
     }
     return <Outlet />;
   }

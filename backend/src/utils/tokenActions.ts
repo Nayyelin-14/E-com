@@ -32,12 +32,12 @@ export const generateNewToken = async (
       process.env.REFRESH_TOKEN_SECRET!
     ) as { userId: string };
   } catch (err: any) {
-    next(err);
+    throw new Error("Invalid refresh token");
   }
 
   const user = await User.findById(decoded!.userId);
   if (!user) {
-    res.status(404).json("User is not authenticated");
+    throw new Error("User not found");
   }
 
   //if all ok , create new token
@@ -65,6 +65,5 @@ export const generateNewToken = async (
     name: user?.name!,
     role: user?.role!,
   };
-
-  next();
+  return newAccessToken;
 };

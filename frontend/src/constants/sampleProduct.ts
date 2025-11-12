@@ -150,3 +150,5 @@ export const products: ProductType[] = [
     ],
   },
 ];
+
+export const SIZES = ["xs", "sm", "lg", "xl", "xxl"];

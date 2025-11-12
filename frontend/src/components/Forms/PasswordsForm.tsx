@@ -16,7 +16,7 @@ import { PasswordSchema } from "@/schemas/AuthSchema";
 import { toast } from "sonner";
 import { useUpdatePasswordMutation } from "@/store/slices/userApiSlice";
 import { Loader } from "lucide-react";
-import { PasswordInput } from "../PasswordInput";
+import { PasswordInput } from "../Inputs/PasswordInput";
 
 const PasswordsForm = () => {
   const [updatePassword, { isLoading: isUpdating }] =
