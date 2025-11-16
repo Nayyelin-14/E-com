@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-const Image_Types = ["image/jpg", "image/png", "image/jpeg", "image/webp"];
+export const Image_Types = [
+  "image/jpg",
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+];
 export const productSchema = z.object({
   name: z
     .string("Product name is required")
@@ -41,7 +46,7 @@ export const productSchema = z.object({
   colors: z.array(z.string()).min(1, "At least one color is required"),
 
   sizes: z
-    .array(z.enum(["xs,s,lg,xl,xxl"]))
+    .array(z.enum(["xs", "s", "m", "lg", "xl", "xxl"]))
     .min(1, "At least one size is required"),
   instock_count: z
     .number("Stock count is required")

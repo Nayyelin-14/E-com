@@ -7,7 +7,7 @@ import {
   updateUserProfile,
   uploadProfile,
 } from "../controllers/users/users.con";
-import uploadMiddleware from "../middlewares/uploadProfile";
+import uploadMiddleware from "../middlewares/uploadMiddleware";
 import { PasswordValidator, ProfleUpdateValidator } from "../utils/validations";
 
 const router = express.Router();

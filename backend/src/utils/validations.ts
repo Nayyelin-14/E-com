@@ -27,18 +27,21 @@ export const productValidator = [
     .isBoolean()
     .withMessage("is_newArrival must be a boolean"),
 
-  body("images").isArray({ min: 1 }).withMessage("Images must be an array"),
-  body("images.*.url").notEmpty().withMessage("Must have url"),
-  body("images.*.public_alt").notEmpty().withMessage("Must have public_alt"),
   body("category")
     .notEmpty()
     .withMessage("category is required")
     .isString()
     .withMessage("category must be a string"),
 
-  body("colors").isArray().withMessage("Colors must be an array of strings"),
+  body("colors")
+    .customSanitizer((value) => (typeof value === "string" ? [value] : value))
+    .isArray()
+    .withMessage("Colors must be an array of strings"),
 
-  body("sizes").isArray().withMessage("Sizes must be an array of strings"),
+  body("sizes")
+    .customSanitizer((value) => (typeof value === "string" ? [value] : value))
+    .isArray()
+    .withMessage("Sizes must be an array of strings"),
 
   body("instock_count")
     .notEmpty()

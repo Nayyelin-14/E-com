@@ -1,7 +1,7 @@
 import { Queue } from "bullmq";
 import { redisConnection } from "../../configs/redisClient";
 
-const UploadPhotoQueue = new Queue("ProfileUploadQueue", {
+const ImagesQueue = new Queue("ImageUploadQueue", {
   connection: redisConnection,
   defaultJobOptions: {
     removeOnComplete: true,
@@ -14,4 +14,4 @@ const UploadPhotoQueue = new Queue("ProfileUploadQueue", {
   },
 });
 
-export default UploadPhotoQueue;
+export default ImagesQueue;

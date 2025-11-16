@@ -61,7 +61,7 @@ const productSchema = new Schema<IProduct>(
       type: [
         {
           url: String,
-          publi_alt: String,
+          public_alt: String,
         },
       ],
       required: [true, "At least one image is required"],

@@ -12,6 +12,7 @@ import {
 } from "../controllers/Products/products.con";
 import { productValidator } from "../utils/validations";
 import { validateProductCreaion } from "../middlewares/validate.midd";
+import uploadMiddleware from "../middlewares/uploadMiddleware";
 
 const router = express.Router();
 
@@ -19,10 +20,12 @@ router.post(
   "/create-product",
   authenticate,
   authorization(["admin"]),
+  uploadMiddleware.array("productImages"), // MUST RUN FIRST
   productValidator,
   validateProductCreaion,
   createProduct
 );
+
 router.delete(
   "/delete-product/:productId",
   authenticate,

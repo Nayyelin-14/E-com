@@ -5,18 +5,50 @@ import { uploadToCloudinary } from "../../configs/cloudinary";
 import { redisConnection } from "../../configs/redisClient";
 import User from "../../models/user.model";
 import { connectDB } from "../../db/connectDB";
+import Product from "../../models/products.model";
 
 connectDB()
   .then(() => console.log("✅ Worker connected to MongoDB"))
   .catch((err) => console.error("❌ Worker DB connection failed", err));
 const imageWorker = new Worker(
-  "ProfileUploadQueue", // Queue name
+  "ImageUploadQueue", // Queue name
   async (job: Job) => {
     console.log(`📸 Processing image job: ${job.id}`);
 
     if (job.name === "ProfileUpload") {
       const { fileName, folder, width, height, quality, buffer, userId } =
         job.data;
+    }
+
+    if (job.name === "ProductImages") {
+      const { fileName, folder, width, height, quality, buffer, productId } =
+        job.data;
+      const imageBuffer = Buffer.from(buffer, "base64");
+      // optimize with sharp
+      const optimizedBuffer = await sharp(imageBuffer)
+        .resize(width, height, { fit: "cover" }) // you can choose any size
+        .webp({ quality, lossless: false })
+        .toBuffer();
+
+      const uploadResult = await uploadToCloudinary(
+        optimizedBuffer,
+        folder,
+        fileName
+      );
+      if (uploadResult) {
+        await Product.findByIdAndUpdate(
+          productId,
+          {
+            $push: {
+              images: {
+                url: uploadResult.secure_url,
+                public_alt: uploadResult.fileName,
+              },
+            },
+          },
+          { new: true } // optional: returns updated doc
+        );
+      }
     }
   },
   {

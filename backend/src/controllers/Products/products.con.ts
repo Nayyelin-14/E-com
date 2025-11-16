@@ -3,6 +3,7 @@ import Product from "../../models/products.model";
 import User from "../../models/user.model";
 import asyncHandler from "../../utils/asynHandler";
 import { NextFunction, Request, Response } from "express";
+import { ProductImagesQueue } from "../../utils/queueHelper";
 export const createProduct = asyncHandler(
   async (req: CustomUser, res: Response, next: NextFunction) => {
     // Get user ID from authenticated request (assuming auth middleware sets req.user)
@@ -23,33 +24,56 @@ export const createProduct = asyncHandler(
       description,
       price,
       rating_count,
-      createdAt,
-      updatedAt,
+
       is_Featured,
       is_newArrival,
-      images,
+
       category,
       colors,
       sizes,
       instock_count,
     } = req.body;
 
+    const files = req.files as Express.Multer.File[];
+
+    if (!files || files.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "At least one product image required" });
+    }
     const newProduct = await Product.create({
       name,
       description,
       price,
       rating_count,
-      createdAt,
-      updatedAt,
+
       is_Featured,
       is_newArrival,
-      images,
+
       category,
       colors,
       sizes,
       instock_count,
       user: userId,
     });
+    await Promise.all(
+      files.map(async (file) => {
+        const originalName = file.originalname.split(".")[0];
+        const uniqueFileName = `${originalName}_${Date.now()}`;
+
+        // enqueue job
+        await ProductImagesQueue({
+          buffer: file.buffer,
+          fileName: uniqueFileName,
+          userId: userId,
+          folder: "products",
+          width: 1200,
+          height: 1200,
+          quality: 70,
+          productId: newProduct._id!.toString(),
+        });
+      })
+    );
 
     if (newProduct) {
       res.status(200).json({
@@ -138,7 +162,8 @@ export const updateProduct = asyncHandler(
 
       res.status(200).json({
         success: true,
-        message: "Product updated successfully",
+        message:
+          "Product updated successfully. Images are uploading in the background",
         data: updatedProduct,
       });
     } catch (error) {

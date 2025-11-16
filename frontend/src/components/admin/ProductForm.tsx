@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
@@ -17,11 +17,12 @@ import CategoryDropDown from "../Inputs/CategoryDropDown";
 import ColorPicker from "../Inputs/ColorPicker";
 import SizePicker from "../Inputs/SizePicker";
 import { Switch } from "../ui/switch";
+import Tiptap from "../editor/TipTap";
 
 interface FormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any;
-  onSubmit: (data: typeof productSchema) => void;
+  onSubmit: SubmitHandler<z.infer<typeof productSchema>>;
   isLoading: boolean;
 }
 const ProductForm = ({ initialData, onSubmit, isLoading }: FormProps) => {
@@ -42,12 +43,6 @@ const ProductForm = ({ initialData, onSubmit, isLoading }: FormProps) => {
     },
   });
 
-  //   // 2. Define a submit handler.
-  //   function onSubmit(values: z.infer<typeof productSchema>) {
-  //     // Do something with the form values.
-  //     // ✅ This will be type-safe and validated.
-  //     console.log(values);
-  //   }
   return (
     <div>
       <Form {...form}>
@@ -73,7 +68,7 @@ const ProductForm = ({ initialData, onSubmit, isLoading }: FormProps) => {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Tiptap value={field.value} onChange={field.onChange} />
                 </FormControl>
 
                 <FormMessage />
@@ -223,7 +218,11 @@ const ProductForm = ({ initialData, onSubmit, isLoading }: FormProps) => {
               )}
             />
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-full cursor-pointer"
+            disabled={isLoading}
+          >
             {isLoading ? "Creating new product" : "Create new product"}
           </Button>
         </form>
