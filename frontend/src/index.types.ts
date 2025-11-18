@@ -61,3 +61,8 @@ export type FiltersMeta = {
     maxPrice: number;
   };
 };
+export type ProductResponse = {
+  success: boolean;
+  data: Product;
+  message?: string;
+};

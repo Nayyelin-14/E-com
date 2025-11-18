@@ -43,7 +43,7 @@ export const ProductImagesQueue = async (payload: {
 }) => {
   console.log(payload);
   return await ImagesQueue.add(
-    "ProductImages",
+    "ProductImagesUpload",
     {
       buffer: payload.buffer.toString("base64"),
       folder: payload.folder,
@@ -58,6 +58,26 @@ export const ProductImagesQueue = async (payload: {
       jobId: `product_image_${payload.userId}_${
         payload.fileName
       }_${Date.now()}`,
+      attempts: 3,
+      backoff: { type: "exponential", delay: 1000 },
+      removeOnComplete: 1000 * 60 * 5,
+      removeOnFail: 1000 * 60 * 10,
+    }
+  );
+};
+
+export const RemoveProductImagesQueue = async (payload: {
+  public_alt: string;
+  product_Id: string;
+}) => {
+  return await ImagesQueue.add(
+    "ProductImagesRemove",
+    {
+      public_alt: payload.public_alt,
+      product_Id: payload.product_Id,
+    },
+    {
+      jobId: `product_image_${payload.product_Id}_${Date.now()}`,
       attempts: 3,
       backoff: { type: "exponential", delay: 1000 },
       removeOnComplete: 1000 * 60 * 5,

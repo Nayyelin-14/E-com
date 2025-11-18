@@ -1,4 +1,4 @@
-import type { FiltersMeta, Product } from "@/index.types";
+import type { FiltersMeta, ProductResponse } from "@/index.types";
 import { apiSlice } from "./apiSlice";
 
 export const productsApiSlice = apiSlice.injectEndpoints({
@@ -55,11 +55,22 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         return `/products/getallproducts?${params.toString()}`;
       },
     }),
-    createProduct: builder.mutation<Product, FormData>({
+    createProduct: builder.mutation<ProductResponse, FormData>({
       query: (data) => ({
         url: `/products/create-product`,
         method: "POST",
         body: data,
+      }),
+      invalidatesTags: ["Product"],
+    }),
+    updateProduct: builder.mutation<
+      ProductResponse,
+      { formdata: FormData; productId: string }
+    >({
+      query: ({ formdata, productId }) => ({
+        url: `/products/update-product/${productId}`,
+        method: "PUT",
+        body: formdata,
       }),
       invalidatesTags: ["Product"],
     }),
@@ -73,4 +84,5 @@ export const {
   useGetSingleProductQuery,
   useGetFiltersMetaQuery,
   useCreateProductMutation,
+  useUpdateProductMutation,
 } = productsApiSlice;

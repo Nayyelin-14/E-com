@@ -7,6 +7,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import RouteGuard from "./layouts/AuthCheck";
 import Loader from "./common/Loader";
 import AdminLayout from "./layouts/AdminLayout";
+import ProductManagementPage from "./pages/Products/admin/ProductManagementPage";
 
 // Lazy load pages
 const Homepage = lazy(() => import("./pages/Homepage"));
@@ -14,8 +15,8 @@ const LoginPage = lazy(() => import("./pages/Auth/LoginPage"));
 const RegisterPage = lazy(() => import("./pages/Auth/RegisterPage"));
 const AllProducts = lazy(() => import("./pages/Products/AllProducts"));
 const ProductDetails = lazy(() => import("./pages/Products/ProductDetails"));
-const CreateProductPage = lazy(
-  () => import("./pages/Products/admin/createProductPage")
+const ProductActionPage = lazy(
+  () => import("./pages/Products/admin/ProductActionPage")
 );
 const Profile = lazy(() => import("./pages/Users/Profile"));
 const SettingPage = lazy(() => import("./pages/Users/SettingPage"));
@@ -63,10 +64,26 @@ const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               {
-                path: "admin/product/create-products",
+                path: "admin/products/actions",
                 element: (
                   <SuspenseWrapper>
-                    <CreateProductPage />
+                    <ProductActionPage />
+                  </SuspenseWrapper>
+                ),
+              },
+              {
+                path: "admin/products/actions/:productId",
+                element: (
+                  <SuspenseWrapper>
+                    <ProductActionPage />
+                  </SuspenseWrapper>
+                ),
+              },
+              {
+                path: "admin/products/management",
+                element: (
+                  <SuspenseWrapper>
+                    <ProductManagementPage />
                   </SuspenseWrapper>
                 ),
               },

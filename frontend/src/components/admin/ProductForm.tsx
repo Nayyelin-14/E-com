@@ -42,7 +42,13 @@ const ProductForm = ({ initialData, onSubmit, isLoading }: FormProps) => {
       is_newArrival: false,
     },
   });
+  const buttonLabel = (() => {
+    if (isLoading && !initialData) return "Creating new product...";
+    if (!isLoading && !initialData) return "Create";
 
+    if (isLoading && initialData) return "Updating product...";
+    return "Update";
+  })();
   return (
     <div>
       <Form {...form}>
@@ -223,7 +229,7 @@ const ProductForm = ({ initialData, onSubmit, isLoading }: FormProps) => {
             className="w-full cursor-pointer"
             disabled={isLoading}
           >
-            {isLoading ? "Creating new product" : "Create new product"}
+            {buttonLabel}
           </Button>
         </form>
       </Form>

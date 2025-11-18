@@ -1,11 +1,16 @@
-import { PackagePlus } from "lucide-react";
+import { Package, PackagePlus } from "lucide-react";
 import { Link, useLocation } from "react-router";
 
 const SideBar = () => {
   const pages = [
     {
       name: "Create Product",
-      path: "/admin/product/create-products",
+      path: "/admin/products/management",
+      icon: <Package />,
+    },
+    {
+      name: "Create Product",
+      path: "/admin/products/actions",
       icon: <PackagePlus />,
     },
     // You can add more pages here

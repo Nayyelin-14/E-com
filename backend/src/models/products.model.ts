@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import mongoose, { Schema, model, Document, Types } from "mongoose";
 interface Image {
   url: string;
-  publi_alt: string;
+  public_alt: string;
 }
 export interface IProduct extends Document {
   user: Types.ObjectId;

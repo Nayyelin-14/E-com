@@ -36,6 +36,9 @@ router.put(
   "/update-product/:productId",
   authenticate,
   authorization(["admin"]),
+  uploadMiddleware.array("productImages"), // MUST RUN FIRST
+  productValidator,
+  validateProductCreaion,
   updateProduct
 );
 router.get("/getallproducts", getProductsWithFilter);

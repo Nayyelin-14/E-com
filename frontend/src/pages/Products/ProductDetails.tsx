@@ -78,9 +78,10 @@ const ProductDetails = () => {
         <p className="text-3xl font-bold">{data.product.name}</p>
         <ProductRating ratingCount={data.product.rating} />
         <p className="text-3xl font-extrabold mb-1">$ {data.product.price}</p>
-        <p className="text-sm font-medium text-gray-400">
-          {data.product.description}
-        </p>
+        <div
+          className="text-sm font-medium text-gray-400"
+          dangerouslySetInnerHTML={{ __html: data.product.description }}
+        />
         <hr className="text-xl font-bold my-2 text-gray-400" />
         <p className="text-xl font-bold">Colors</p>
         <div className="flex gap-2 mt-2 items-center">

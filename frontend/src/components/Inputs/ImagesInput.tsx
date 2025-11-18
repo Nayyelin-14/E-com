@@ -2,8 +2,14 @@ import { Plus, X } from "lucide-react";
 import { useRef } from "react";
 
 interface inputProps {
-  onChange: (images: Array<{ preview: string; public_alt?: string }>) => void;
-  images: Array<{ preview: string; file?: File; public_alt?: string }>;
+  onChange: (
+    images: Array<{ url: string; file?: File; public_alt?: string }>
+  ) => void;
+  images: Array<{
+    url: string;
+    file?: File;
+    public_alt?: string;
+  }>;
 }
 const ImagesInput = ({ images, onChange }: inputProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -15,19 +21,21 @@ const ImagesInput = ({ images, onChange }: inputProps) => {
 
     const newImages = files?.map((file) => ({
       file,
-      preview: URL.createObjectURL(file),
+      url: URL.createObjectURL(file),
     }));
+    console.log(newImages);
     onChange([...images, ...newImages]);
   };
   const handleRemove = (index: number) => {
     const allImages = [...images];
     console.log(images[index]);
-    if (images[index].preview.startsWith("blob:")) {
-      URL.revokeObjectURL(images[index].preview);
+    if (images[index].url.startsWith("blob:")) {
+      URL.revokeObjectURL(images[index].url);
     }
     allImages.splice(index, 1);
     onChange(allImages);
   };
+  console.log(images);
   return (
     <div>
       <div className="grid grid-cols-5 md:grid-cols-6 gap-4 mb-3">
@@ -35,12 +43,14 @@ const ImagesInput = ({ images, onChange }: inputProps) => {
           images.map((img, index) => (
             <div
               key={index}
-              className="w-24 h-20 border border-gray-300 rounded-lg relative group overflow-hidden p-1"
+              className={`w-24 h-20 border  rounded-lg relative group overflow-hidden p-1
+                
+                ${img.file ? "border-black" : "border-gray-300"}`}
             >
               <img
-                src={img.preview}
+                src={img.url}
                 alt={`Preview ${index}`}
-                className="w-full h-full object-cover rounded-lg"
+                className={`w-full h-full object-cover rounded-lg  `}
               />
               <button
                 onClick={() => handleRemove(index)}

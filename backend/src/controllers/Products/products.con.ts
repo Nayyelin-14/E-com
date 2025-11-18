@@ -3,7 +3,10 @@ import Product from "../../models/products.model";
 import User from "../../models/user.model";
 import asyncHandler from "../../utils/asynHandler";
 import { NextFunction, Request, Response } from "express";
-import { ProductImagesQueue } from "../../utils/queueHelper";
+import {
+  ProductImagesQueue,
+  RemoveProductImagesQueue,
+} from "../../utils/queueHelper";
 export const createProduct = asyncHandler(
   async (req: CustomUser, res: Response, next: NextFunction) => {
     // Get user ID from authenticated request (assuming auth middleware sets req.user)
@@ -148,6 +151,48 @@ export const updateProduct = asyncHandler(
       if (product.user.toString() !== userID && req.user?.role !== "admin") {
         res.status(403);
         throw new Error("Not authorized to update this product");
+      }
+
+      const existingImages = req.body.existingImages
+        ? JSON.parse(req.body.existingImages)
+        : [];
+      const newImages = req.files as Express.Multer.File[];
+
+      //find images to delete in cloud
+      const imagesToDelete = product.images.filter(
+        (img: any) =>
+          !existingImages.some(
+            (exImg: any) => exImg.public_alt === img.public_alt
+          )
+      );
+      console.log(imagesToDelete);
+      if (imagesToDelete.length > 0) {
+        await Promise.all(
+          imagesToDelete.map(async (img) => {
+            if (img.public_alt) {
+              await RemoveProductImagesQueue({
+                public_alt: img.public_alt,
+                product_Id: product._id!.toString(),
+              });
+            }
+          })
+        );
+      }
+      if (newImages && newImages.length > 0) {
+        await Promise.all(
+          newImages.map(async (file) => {
+            await ProductImagesQueue({
+              buffer: file.buffer,
+              fileName: file.originalname,
+              folder: "products",
+              userId: userID,
+              width: 800, // or whatever you want
+              height: 800,
+              quality: 80,
+              productId: product._id!.toString(),
+            });
+          })
+        );
       }
 
       // Partial update - only update fields that are provided
