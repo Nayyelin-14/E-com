@@ -47,6 +47,7 @@ export type Product = {
   colors: string[];
   images: Image[];
   instock_count: number;
+  createdAt: string | Date;
 };
 
 export type ProductProps = {
@@ -64,5 +65,10 @@ export type FiltersMeta = {
 export type ProductResponse = {
   success: boolean;
   data: Product;
+  message?: string;
+};
+
+export type Response = {
+  isSuccess: boolean;
   message?: string;
 };

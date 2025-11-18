@@ -117,8 +117,25 @@ export const deleteProduct = asyncHandler(
         throw new Error("Not authorized to delete this product");
       }
 
-      await Product.findByIdAndDelete(productId);
+      const imagesToDelete = product.images.map((img) => img.public_alt);
 
+      try {
+        if (imagesToDelete.length > 0) {
+          await Promise.all(
+            imagesToDelete.map(async (alt) => {
+              if (alt) {
+                await RemoveProductImagesQueue({
+                  public_alt: alt,
+                  product_Id: product._id!.toString(),
+                });
+              }
+            })
+          );
+        }
+        await Product.findByIdAndDelete(productId);
+      } catch (error) {
+        throw new Error("Failed to delete product");
+      }
       res.status(200).json({
         success: true,
         message: "Product deleted successfully",

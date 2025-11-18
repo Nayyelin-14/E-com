@@ -1,4 +1,4 @@
-import type { FiltersMeta, ProductResponse } from "@/index.types";
+import type { FiltersMeta, ProductResponse, Response } from "@/index.types";
 import { apiSlice } from "./apiSlice";
 
 export const productsApiSlice = apiSlice.injectEndpoints({
@@ -8,24 +8,28 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         url: "/products/new-arrivals",
         method: "GET",
       }),
+      providesTags: ["Product"],
     }),
     getFeatured: builder.query({
       query: () => ({
         url: "/products/is_featured",
         method: "GET",
       }),
+      providesTags: ["Product"],
     }),
     getSingleProduct: builder.query({
       query: (id: string) => ({
         url: `/products/details/${id}`,
         method: "GET",
       }),
+      providesTags: ["Product"],
     }),
     getFiltersMeta: builder.query<FiltersMeta, string>({
       query: () => ({
         url: `/products/filters/meta`,
         method: "GET",
       }),
+      providesTags: ["Product"],
     }),
     getAllProductsWithFilters: builder.query({
       query: ({
@@ -54,6 +58,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
 
         return `/products/getallproducts?${params.toString()}`;
       },
+      providesTags: ["Product"],
     }),
     createProduct: builder.mutation<ProductResponse, FormData>({
       query: (data) => ({
@@ -74,6 +79,13 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Product"],
     }),
+    deleteProduct: builder.mutation<Response, string>({
+      query: (productId) => ({
+        url: `/products/delete-product/${productId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Product"],
+    }),
   }),
 });
 
@@ -85,4 +97,5 @@ export const {
   useGetFiltersMetaQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
+  useDeleteProductMutation,
 } = productsApiSlice;

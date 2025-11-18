@@ -52,7 +52,9 @@ const ProductMetaCard = ({
     <Card className={colors.card}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className={`text-2xl font-bold ${colors.title}`}>
+          <CardTitle
+            className={`text-md lg:text-xl xk:text-2xl font-bold ${colors.title}`}
+          >
             {title}
           </CardTitle>
           <Icon className={`h-8 w-8 ${colors.icon}`} />
@@ -62,7 +64,11 @@ const ProductMetaCard = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className={`text-5xl font-bold ${colors.value}`}>{value}</p>
+        <p
+          className={`text-3xl lg:text-4xl xk:text-5xl font-bold ${colors.value}`}
+        >
+          {value}
+        </p>
       </CardContent>
     </Card>
   );

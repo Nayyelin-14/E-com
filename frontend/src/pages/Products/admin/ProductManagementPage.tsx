@@ -11,6 +11,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import DataTable from "@/components/DataTable/DataTable";
 
 const ProductManagementPage = () => {
   const { data, isLoading, error, isFetching, refetch } =
@@ -42,7 +50,8 @@ const ProductManagementPage = () => {
           <AlertDescription className="flex items-center justify-between">
             <span>
               {error && "data" in error
-                ? (error.data as any)?.message ||
+                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (error.data as any)?.message ||
                   "Failed to load products. Please try again."
                 : "An unexpected error occurred."}
             </span>
@@ -134,6 +143,21 @@ const ProductManagementPage = () => {
           Updating data...
         </div>
       )}
+      <div className="my-10">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className={`text-md lg:text-xl xk:text-2xl font-bold`}>
+                Data Management
+              </CardTitle>
+            </div>
+            <CardDescription>Manage all the products inventory</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataTable data={data?.products} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
