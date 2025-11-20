@@ -4,7 +4,7 @@ import type {
   PasswordUpdate,
   RegisterInputs,
   User,
-} from "@/index.types";
+} from "@/types/index.types";
 import { apiSlice } from "./apiSlice";
 
 export const userApiSlice = apiSlice.injectEndpoints({

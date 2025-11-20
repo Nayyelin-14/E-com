@@ -1,5 +1,5 @@
 import ProductMetaCard from "@/components/Products/ProductMetaCard";
-import type { Product } from "@/index.types";
+import type { Product } from "@/types/index.types";
 import { useGetAllProductsWithFiltersQuery } from "@/store/slices/productsApiSlice";
 import {
   Package,

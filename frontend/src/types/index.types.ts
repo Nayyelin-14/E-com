@@ -47,6 +47,8 @@ export type Product = {
   colors: string[];
   images: Image[];
   instock_count: number;
+  is_Featured: boolean;
+  is_newArrival: boolean;
   createdAt: string | Date;
 };
 

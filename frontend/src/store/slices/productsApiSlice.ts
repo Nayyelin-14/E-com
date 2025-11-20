@@ -1,4 +1,8 @@
-import type { FiltersMeta, ProductResponse, Response } from "@/index.types";
+import type {
+  FiltersMeta,
+  ProductResponse,
+  Response,
+} from "@/types/index.types";
 import { apiSlice } from "./apiSlice";
 
 export const productsApiSlice = apiSlice.injectEndpoints({

@@ -4,7 +4,7 @@ import { Outlet } from "react-router";
 
 const AdminLayout = () => {
   return (
-    <section className="grid grid-cols-10 my-10">
+    <section className="grid grid-cols-10 my-10 gap-10">
       <div className="col-span-2">
         <SideBar />
       </div>

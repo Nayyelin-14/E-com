@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { EditableInfos } from "@/index.types";
+import type { EditableInfos } from "@/types/index.types";
 import { Calendar, Edit2, Loader, Mail, Save, X } from "lucide-react";
 import { useState } from "react";
 import {

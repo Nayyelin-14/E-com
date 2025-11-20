@@ -1,4 +1,4 @@
-import type { Product } from "@/index.types";
+import type { Product } from "@/types/index.types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -22,7 +22,7 @@ import {
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Edit, Eye, MoreHorizontal, Trash } from "lucide-react";
+import { ArrowUpDown, Edit, Eye, MoreHorizontal, Trash } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useDeleteProductMutation } from "@/store/slices/productsApiSlice";
@@ -30,6 +30,7 @@ import { toast } from "sonner";
 const DataColumns = (): ColumnDef<Product>[] => {
   const navigate = useNavigate();
   const [deleteAction] = useDeleteProductMutation();
+
   const deletehandler = async (productId: string) => {
     try {
       const response = await deleteAction(productId);
@@ -91,7 +92,18 @@ const DataColumns = (): ColumnDef<Product>[] => {
     },
     {
       accessorKey: "price",
-      header: "Price",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Price
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+
       cell: ({ row }) => {
         const product = row.original;
 

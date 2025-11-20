@@ -1,6 +1,7 @@
 import { useState } from "react";
 import SearchBar from "../common/SearchBar";
 import {
+  LayoutDashboard,
   LogIn,
   LogOut,
   Settings,
@@ -34,6 +35,9 @@ const MainNav = () => {
     setIsOpen((prev) => !prev);
   };
   const dispatch = useDispatch();
+  const itemsInCart = useSelector(
+    (state: RootState) => state.cart.items.length
+  );
   const handleLogout = async () => {
     try {
       const response = await logoutMutation(undefined).unwrap();
@@ -61,10 +65,15 @@ const MainNav = () => {
         <h1 className="font-bold text-3xl">FlipFlop</h1>
         <SearchBar />
         <div className=" flex items-center  gap-4">
-          <ShoppingCart
-            onClick={toggleCart}
-            className="hover:text-gray-500 cursor-pointer"
-          />
+          <div className="relative">
+            <ShoppingCart
+              onClick={toggleCart}
+              className="hover:text-gray-500 cursor-pointer"
+            />
+            <span className="absolute  p-0.5 px-1.5 bg-red-500 text-center -top-3 -right-2 rounded-full text-xs">
+              {itemsInCart}
+            </span>
+          </div>
           {userInfo ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -98,6 +107,15 @@ const MainNav = () => {
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
+                {userInfo.role === "admin" && (
+                  <DropdownMenuItem
+                    className="cursor-pointer hover:bg-black/20"
+                    onClick={() => navigate("/admin/dashboard")}
+                  >
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    <span>Dashboard</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-300/20"

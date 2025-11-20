@@ -5,9 +5,11 @@ import { Loader, Minus, Plus } from "lucide-react";
 import { useGetSingleProductQuery } from "@/store/slices/productsApiSlice";
 import { useParams } from "react-router";
 import type { RootState } from "@/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "@/store/slices/Cart";
 
 const ProductDetails = () => {
+  const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -30,7 +32,19 @@ const ProductDetails = () => {
       }
     }
   }, [data?.product, id]); // ONLY depend on id - this runs when navigating to a new product
-
+  const addToCartHandler = () => {
+    dispatch(
+      addToCart({
+        productId: id,
+        price: data.product.price,
+        name: data.product.name,
+        size: selectedSize,
+        color: selectedColor,
+        image: data.product.images[0].url,
+        quantity,
+      })
+    );
+  };
   if (dataLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -142,7 +156,10 @@ const ProductDetails = () => {
                 </button>
               </div>
 
-              <button className="p-3 rounded-lg bg-black w-full text-center font-semibold text-white hover:bg-black/80 cursor-pointer transition-colors">
+              <button
+                className="p-3 rounded-lg bg-black w-full text-center font-semibold text-white hover:bg-black/80 cursor-pointer transition-colors"
+                onClick={addToCartHandler}
+              >
                 Add to Cart
               </button>
             </div>

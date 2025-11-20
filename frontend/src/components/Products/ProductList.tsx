@@ -1,5 +1,5 @@
 // ProductList.tsx
-import type { ProductProps } from "@/index.types";
+import type { ProductProps } from "@/types/index.types";
 import ProductsCards from "./ProductsCards";
 
 const ProductList = ({ products }: ProductProps) => {

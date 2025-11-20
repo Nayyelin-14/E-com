@@ -12,7 +12,7 @@ interface CardProps {
   value: number;
   description: string;
   icon: LucideIcon;
-  colorScheme?: "blue" | "green" | "red";
+  colorScheme?: "blue" | "green" | "red" | "purple" | "yellow";
 }
 
 const ProductMetaCard = ({
@@ -43,6 +43,20 @@ const ProductMetaCard = ({
       icon: "text-red-600",
       description: "text-red-700",
       value: "text-red-900",
+    },
+    purple: {
+      card: "border-purple-200 bg-purple-50",
+      title: "text-purple-900",
+      icon: "text-purple-600",
+      description: "text-purple-700",
+      value: "text-purple-900",
+    },
+    yellow: {
+      card: "border-yellow-200 bg-yellow-50",
+      title: "text-yellow-900",
+      icon: "text-yellow-600",
+      description: "text-yellow-700",
+      value: "text-yellow-900",
     },
   };
 

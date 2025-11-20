@@ -8,6 +8,8 @@ import RouteGuard from "./layouts/AuthCheck";
 import Loader from "./common/Loader";
 import AdminLayout from "./layouts/AdminLayout";
 import ProductManagementPage from "./pages/Products/admin/ProductManagementPage";
+import Usermanagement from "./pages/Products/admin/Usermanagement";
+import Dashboard from "./pages/Products/admin/Dashboard";
 
 // Lazy load pages
 const Homepage = lazy(() => import("./pages/Homepage"));
@@ -79,11 +81,28 @@ const router = createBrowserRouter([
                   </SuspenseWrapper>
                 ),
               },
+
               {
                 path: "admin/products/management",
                 element: (
                   <SuspenseWrapper>
                     <ProductManagementPage />
+                  </SuspenseWrapper>
+                ),
+              },
+              {
+                path: "admin/users/management",
+                element: (
+                  <SuspenseWrapper>
+                    <Usermanagement />
+                  </SuspenseWrapper>
+                ),
+              },
+              {
+                path: "admin/dashboard",
+                element: (
+                  <SuspenseWrapper>
+                    <Dashboard />
                   </SuspenseWrapper>
                 ),
               },
